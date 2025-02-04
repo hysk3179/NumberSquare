@@ -28,10 +28,31 @@ public class Square {
         y = (top+size/2)+22;
         number = i;
    }
+    /**
+     * Checks whether this {@link Square} overlaps with another {@link Square}.
+     *
+     * The method determines if the bounding rectangles of the two squares intersect using the {@link RectF#intersects(RectF, RectF)}
+     * method. It returns {@code true} if the two squares' bounds overlap, otherwise {@code false}.
+     *
+     * @param other The other {@link Square} to check for overlap with this square.
+     * @return {@code true} if the two squares overlap, {@code false} if they do not.
+     */
    public boolean isOverlapping (Square other) {
         return RectF.intersects(this.bounds, other.bounds);
    }
-
+    /**
+     * Draws the square onto the provided {@link Canvas}.
+     *
+     * The method first creates a green {@link Paint} object to outline the square, setting its color to green,
+     * its style to stroke (no fill), and the stroke width to 20. It then creates a red {@link Paint} object to
+     * draw text inside the square, setting its color to red and the text size to 100.
+     *
+     * The method uses the canvas to draw the square's bounding rectangle (`bounds`) with the green paint and
+     * the number associated with the square as text at the position defined by the square's coordinates (`x`, `y`),
+     * using the red paint.
+     *
+     * @param c The {@link Canvas} onto which the square and its number will be drawn.
+     */
     public void draw(Canvas c) {
         green = new Paint();
         green.setColor(Color.GREEN);
