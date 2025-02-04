@@ -27,30 +27,9 @@ public class Square {
         x = (left+size/2)-22;
         y = (top+size/2)+22;
         number = i;
-    }
-    /**
-     * Checks if this square is overlapping with another square.
-     * <p>
-     * This method uses the {@link RectF#intersects(RectF, RectF)} function to check if the
-     * bounding rectangles of this square and another square intersect.
-     * </p>
-     *
-     * @param other The other square to check for overlap.
-     * @return true if the squares overlap, false otherwise.
-     */
-    public boolean isOverlapping(Square other) {
-        return RectF.intersects(this.bounds, other.bounds);
-    }
 
-    /**
-     * Draws a square and its associated number on the given canvas.
-     * <p>
-     * This method draws a green rectangle (representing the square) with a stroke style,
-     * and then draws the number inside the square in red at a specified position.
-     * </p>
-     *
-     * @param c The Canvas on which the square and number will be drawn.
-     */
+   }
+
     public void draw(Canvas c) {
         green = new Paint();
         green.setColor(Color.GREEN);
