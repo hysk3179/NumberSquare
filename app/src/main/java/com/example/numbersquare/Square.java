@@ -27,7 +27,9 @@ public class Square {
         x = (left+size/2)-22;
         y = (top+size/2)+22;
         number = i;
-
+   }
+   public boolean isOverlapping (Square other) {
+        return RectF.intersects(this.bounds, other.bounds);
    }
 
     public void draw(Canvas c) {
@@ -41,9 +43,6 @@ public class Square {
         red.setTextSize(100);
         c.drawRect(bounds, green);
         c.drawText(Integer.toString(number), x, y, red);
-
-
-
     }
 
 }

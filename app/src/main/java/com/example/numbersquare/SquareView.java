@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -15,11 +16,9 @@ public class SquareView extends View {
 
     private Paint red;
     private Paint blue;
-    private float rectWidth, rectHeight;
-    private float rectLeft, rectTop;
-    private RectF bounds;
     private List<Square> flock;
     protected boolean initialized;
+    private Square check;
 
     public SquareView(Context c) {
         super(c);
@@ -39,16 +38,42 @@ public class SquareView extends View {
     public void onDraw(Canvas c) {
         float w = getWidth();
         float h = getHeight();
-        if (initialized == false) {
-            //Resources res = getResources();
-            for (int i = 1; i < 6; i ++) {
-                flock.add(new Square(w, h, i));
+        flock.clear();
+        if (!initialized) {
+            flock.add(new Square(w,h,1));
+            for (int i = 2; i < 6; i ++) {
+                Square check;
+                boolean overlaps;
+                do {
+                    check = new Square(w,h,i);
+                    overlaps = false;
+                    for (int j = 0; j < flock.size(); j++) {
+                        if (check.isOverlapping(flock.get(j))) {
+                            overlaps = true;
+                            break;
+                        }
+                    }
+                } while (overlaps);
+
+                    flock.add(check);
             }
             initialized = true;
         }
         for (var d : flock) {
             d.draw(c);
-
         }
+    }
+    @Override
+    public boolean onTouchEvent(MotionEvent m) {
+        if (m.getAction() == MotionEvent.ACTION_DOWN){
+            initialized = false;
+            invalidate();
+            return true;
+        } else if (m.getAction() == MotionEvent.ACTION_UP) {
+            initialized = false;
+            invalidate();
+            return true;
+        }
+        return super.onTouchEvent(m);
     }
 }
