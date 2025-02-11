@@ -6,6 +6,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.os.Handler;
+import android.os.Message;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -19,6 +21,24 @@ public class SquareView extends View {
     private List<Square> flock;
     protected boolean initialized;
     private Square check;
+    private Timer tim;
+
+    public class Timer extends Handler {
+
+        public Timer() {
+            sendMessageDelayed(obtainMessage(), 0);
+        }
+
+        @Override
+        public void handleMessage(Message m) {
+            for (var d : flock) {
+                d.move();
+
+            }
+            invalidate();
+            sendMessageDelayed(obtainMessage(), 10);
+        }
+    }
 
     public SquareView(Context c) {
         super(c);
@@ -32,36 +52,26 @@ public class SquareView extends View {
         blue = new Paint();
         blue.setColor(Color.BLUE);
         blue.setTextSize(100);
+        tim = new Timer();
     }
 
     /**
-     * This method is responsible for drawing the flock of squares onto the provided {@link Canvas}.
+     * Initializes and draws squares on the canvas. If not already initialized,
+     * it adds new squares to the flock, ensuring no overlaps, and starts a timer.
      *
-     * Initially, the method checks if the flock has been initialized. If not, it generates a set of squares
-     * of different sizes, ensuring that they do not overlap. Each square is added to the flock, and once the
-     * initialization is complete, the {@link Square} objects are drawn onto the canvas.
-     *
-     * The squares are generated based on the current dimensions of the view, and they are stored in the
-     * flock list. The first square is added with a fixed size, and subsequent squares of increasing sizes
-     * are added after ensuring that they do not overlap with any already existing squares in the flock.
-     *
-     * After the initialization, the method iterates through all squares in the flock and draws them using
-     * their respective {@link Square#draw(Canvas)} method.
-     *
-     * @param c The {@link Canvas} object onto which the flock of squares will be drawn.
+     * @param c The canvas on which to draw the squares.
      */
     @Override
     public void onDraw(Canvas c) {
         float w = getWidth();
         float h = getHeight();
-        flock.clear();
-        if (!initialized) {
+       if (!initialized) {
             flock.add(new Square(w,h,1));
             for (int i = 2; i < 6; i ++) {
                 Square check;
                 boolean overlaps;
                 do {
-                    check = new Square(w,h,i);
+                    check = new Square(w,h);
                     overlaps = false;
                     for (int j = 0; j < flock.size(); j++) {
                         if (check.isOverlapping(flock.get(j))) {
@@ -70,28 +80,25 @@ public class SquareView extends View {
                         }
                     }
                 } while (overlaps);
-
-                    flock.add(check);
+                check.counter();
+                flock.add(check);
             }
+
             initialized = true;
-        }
-        for (var d : flock) {
+       }
+       for (var d : flock) {
             d.draw(c);
-        }
+       }
     }
 
-    /**
-     * This method handles touch events on the view.
-     *
-     * It listens for both ACTION_DOWN and ACTION_UP events. When the user touches the screen (ACTION_DOWN) or
-     * releases the touch (ACTION_UP), the method resets the initialization flag of the flock (`initialized = false`),
-     * triggering the reinitialization of the flock of squares. After that, it calls {@link #invalidate()} to request a
-     * redraw of the view, ensuring that the updated flock is displayed.
-     *
-     * @param m The {@link MotionEvent} that contains details about the touch event.
-     * @return {@code true} if the touch event was handled; {@code false} if the event was not handled.
-     */
 
+    /**
+     * Handles touch events to reset initialization and the flock of squares.
+     * On ACTION_DOWN, it invalidates the view, and on ACTION_UP, it clears the flock.
+     *
+     * @param m The MotionEvent containing the touch event data.
+     * @return True if the event was handled, false otherwise.
+     */
     @Override
     public boolean onTouchEvent(MotionEvent m) {
         if (m.getAction() == MotionEvent.ACTION_DOWN){
@@ -100,6 +107,7 @@ public class SquareView extends View {
             return true;
         } else if (m.getAction() == MotionEvent.ACTION_UP) {
             initialized = false;
+            flock.clear();
             invalidate();
             return true;
         }

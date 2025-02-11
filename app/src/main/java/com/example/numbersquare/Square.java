@@ -4,9 +4,12 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.PointF;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.graphics.RectF;
+import android.util.Log;
 
 import java.security.PrivateKey;
 import java.util.PrimitiveIterator;
@@ -17,41 +20,69 @@ public class Square {
     private Paint red;
     private float x;
     private float y;
-    private int number;
+    static private int number = 1;
+    int id;
+    float width;
+    float height;
+    float velocitydx = (float)(Math.random()*10)-5; //-5 ~ 5
+    float velocitydy = (float)(Math.random()*10)-5; //-5 ~ 5
+
+    PointF p = new PointF(velocitydx, velocitydy);
+
+
 
     public Square(float screenWidth, float screenHeight, int i) {
+        height = screenHeight;
+        width = screenWidth;
+
         float size = screenWidth / 5;
         float left = (float)((screenWidth - size) * Math.random());
         float top = (float)((screenHeight-size) * Math.random());
         bounds = new RectF(left, top, left+size, top+size);
         x = (left+size/2)-22;
         y = (top+size/2)+22;
-        number = i;
+        id = i;
+
+    }
+    public Square(float screenWidth, float screenHeight) {
+        height = screenHeight;
+        width = screenWidth;
+
+        float size = screenWidth / 5;
+        float left = (float)((screenWidth - size) * Math.random());
+        float top = (float)((screenHeight-size) * Math.random());
+        bounds = new RectF(left, top, left+size, top+size);
+        x = (left+size/2)-22;
+        y = (top+size/2)+22;
    }
     /**
-     * Checks whether this {@link Square} overlaps with another {@link Square}.
+     * Checks if this square overlaps with another square.
      *
-     * The method determines if the bounding rectangles of the two squares intersect using the {@link RectF#intersects(RectF, RectF)}
-     * method. It returns {@code true} if the two squares' bounds overlap, otherwise {@code false}.
-     *
-     * @param other The other {@link Square} to check for overlap with this square.
-     * @return {@code true} if the two squares overlap, {@code false} if they do not.
+     * @param other The other square to check for overlap.
+     * @return True if the squares overlap, false otherwise.
      */
    public boolean isOverlapping (Square other) {
         return RectF.intersects(this.bounds, other.bounds);
    }
+
     /**
-     * Draws the square onto the provided {@link Canvas}.
+     * Moves the object by updating its position based on velocity, reversing the velocity
+     * when the object hits the screen boundaries (left, right, top, or bottom).
+     */
+    public void move() {
+        if (bounds.left <= 0 || bounds.right >= width) {
+            p.x = -p.x;
+        }
+        if (bounds.top <= 0 || bounds.bottom >= height) {
+            p.y = -p.y;
+        }
+        bounds.offset(p.x,p.y);
+   }
+    /**
+     * Draws the square and its number on the given canvas.
+     * The square is outlined in green, and its number is displayed in red at the center.
      *
-     * The method first creates a green {@link Paint} object to outline the square, setting its color to green,
-     * its style to stroke (no fill), and the stroke width to 20. It then creates a red {@link Paint} object to
-     * draw text inside the square, setting its color to red and the text size to 100.
-     *
-     * The method uses the canvas to draw the square's bounding rectangle (`bounds`) with the green paint and
-     * the number associated with the square as text at the position defined by the square's coordinates (`x`, `y`),
-     * using the red paint.
-     *
-     * @param c The {@link Canvas} onto which the square and its number will be drawn.
+     * @param c The canvas on which to draw the square and number.
      */
     public void draw(Canvas c) {
         green = new Paint();
@@ -63,7 +94,20 @@ public class Square {
         red.setColor(Color.RED);
         red.setTextSize(100);
         c.drawRect(bounds, green);
-        c.drawText(Integer.toString(number), x, y, red);
+        c.drawText(Integer.toString(id), bounds.centerX()-20, bounds.centerY()+20, red);
     }
-
+    /**
+     * Increments the value of {@code number} and sets {@code id} to the current value of {@code number}.
+     * If {@code number} reaches 5, it resets {@code number} to 1.
+     * <p>
+     * This method ensures that {@code number} cycles between 1 and 4, while {@code id} holds the current value of {@code number}.
+     * </p>
+     */
+    public void counter() {
+        number++;
+        id = number;
+        if (number == 5){
+            number = 1;
+        }
+    }
 }
