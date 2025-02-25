@@ -1,23 +1,17 @@
 package com.example.numbersquare;
 
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.PointF;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PointF;
 import android.graphics.RectF;
-import android.util.Log;
 
-import java.security.PrivateKey;
-import java.util.PrimitiveIterator;
+public class Square implements TickListener {
 
-public class Square {
     private RectF bounds;
     private Paint green;
     private Paint red;
+    private int color;
     private float x;
     private float y;
     static private int number = 1;
@@ -28,7 +22,6 @@ public class Square {
     float velocitydy = (float)(Math.random()*10)-5; //-5 ~ 5
 
     PointF p = new PointF(velocitydx, velocitydy);
-
 
 
     public Square(float screenWidth, float screenHeight, int i) {
@@ -42,6 +35,7 @@ public class Square {
         x = (left+size/2)-22;
         y = (top+size/2)+22;
         id = i;
+        this.color = Color.GREEN;
 
     }
     public Square(float screenWidth, float screenHeight) {
@@ -54,21 +48,38 @@ public class Square {
         bounds = new RectF(left, top, left+size, top+size);
         x = (left+size/2)-22;
         y = (top+size/2)+22;
-   }
-    /**
-     * Checks if this square overlaps with another square.
-     *
-     * @param other The other square to check for overlap.
-     * @return True if the squares overlap, false otherwise.
-     */
-   public boolean isOverlapping (Square other) {
-        return RectF.intersects(this.bounds, other.bounds);
-   }
+        this.color = Color.GREEN;
+    }
 
-    /**
-     * Moves the object by updating its position based on velocity, reversing the velocity
-     * when the object hits the screen boundaries (left, right, top, or bottom).
-     */
+    public void setColor(int newColor) {
+        this.color = newColor;
+    }
+
+        public boolean isOverlapping (Square other) {
+            return RectF.intersects(this.bounds, other.bounds);
+        }
+
+        public boolean isOverlapping(float x, float y) {
+            return this.bounds.contains(x, y);
+        }
+
+    public void check(Square sq) {
+        if (this.isOverlapping(sq)){
+            if (Math.abs((this.bounds.top - sq.bounds.bottom)) <= 10 || Math.abs((this.bounds.bottom - sq.bounds.top)) <= 10) {
+
+                this.p.y = -this.p.y;
+                sq.p.y = -sq.p.y;
+            }
+            if (Math.abs((this.bounds.right - sq.bounds.left)) <= 10 || Math.abs((this.bounds.left - sq.bounds.right)) <= 10) {
+                this.p.x = -this.p.x;
+                sq.p.x = -sq.p.x;
+            }
+            this.bounds.offset(this.p.x,this.p.y);
+            sq.bounds.offset(sq.p.x,sq.p.y);
+        }
+    }
+
+
     public void move() {
         if (bounds.left <= 0 || bounds.right >= width) {
             p.x = -p.x;
@@ -76,38 +87,42 @@ public class Square {
         if (bounds.top <= 0 || bounds.bottom >= height) {
             p.y = -p.y;
         }
-        bounds.offset(p.x,p.y);
-   }
-    /**
-     * Draws the square and its number on the given canvas.
-     * The square is outlined in green, and its number is displayed in red at the center.
-     *
-     * @param c The canvas on which to draw the square and number.
-     */
-    public void draw(Canvas c) {
-        green = new Paint();
-        green.setColor(Color.GREEN);
-        green.setStyle(Paint.Style.STROKE);
-        green.setStrokeWidth(20);
 
-        red = new Paint();
-        red.setColor(Color.RED);
-        red.setTextSize(100);
-        c.drawRect(bounds, green);
-        c.drawText(Integer.toString(id), bounds.centerX()-20, bounds.centerY()+20, red);
+        bounds.offset(p.x,p.y);
+
     }
-    /**
-     * Increments the value of {@code number} and sets {@code id} to the current value of {@code number}.
-     * If {@code number} reaches 5, it resets {@code number} to 1.
-     * <p>
-     * This method ensures that {@code number} cycles between 1 and 4, while {@code id} holds the current value of {@code number}.
-     * </p>
-     */
+    public void stop(Square sq) {
+        p.x = 0;
+        p.y = 0;
+    }
+
+    public void draw(Canvas c) {
+        Paint paint = new Paint();
+        paint.setColor(color);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(20);
+
+        Paint textPaint = new Paint();
+        textPaint.setColor(Color.RED);
+        textPaint.setTextSize(100);
+
+
+        c.drawRect(bounds, paint);
+        c.drawText(Integer.toString(id), bounds.centerX()-20, bounds.centerY()+20, textPaint);
+    }
+
+
+
     public void counter() {
         number++;
         id = number;
         if (number == 5){
             number = 1;
         }
+    }
+
+    @Override
+    public void tick() {
+        move();
     }
 }

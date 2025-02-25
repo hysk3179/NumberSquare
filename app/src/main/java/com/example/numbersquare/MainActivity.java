@@ -16,6 +16,5 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(b);
         sq = new SquareView(this);
         setContentView(sq);
-
     }
 }
