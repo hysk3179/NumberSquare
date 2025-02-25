@@ -24,6 +24,8 @@ public class Square implements TickListener {
     PointF p = new PointF(velocitydx, velocitydy);
 
 
+
+
     public Square(float screenWidth, float screenHeight, int i) {
         height = screenHeight;
         width = screenWidth;
@@ -64,6 +66,7 @@ public class Square implements TickListener {
         }
 
     public void check(Square sq) {
+
         if (this.isOverlapping(sq)){
             if (Math.abs((this.bounds.top - sq.bounds.bottom)) <= 10 || Math.abs((this.bounds.bottom - sq.bounds.top)) <= 10) {
 
@@ -87,9 +90,7 @@ public class Square implements TickListener {
         if (bounds.top <= 0 || bounds.bottom >= height) {
             p.y = -p.y;
         }
-
         bounds.offset(p.x,p.y);
-
     }
     public void stop(Square sq) {
         p.x = 0;
@@ -125,4 +126,15 @@ public class Square implements TickListener {
     public void tick() {
         move();
     }
+
+    @Override
+    public void registerListener(TickListener o) {
+
+    }
+
+    @Override
+    public void removeListener(TickListener o) {
+
+    }
+
 }

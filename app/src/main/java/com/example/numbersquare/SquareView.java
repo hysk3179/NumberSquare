@@ -9,21 +9,45 @@ import android.view.MotionEvent;
 import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
 
 public class SquareView extends View implements TickListener{
 
     private List<Square> flock;
     protected boolean initialized;
     private Square check;
-//    private Timer tim;
+    private Timer tim;
     public boolean isStopped = false;
 
-    @Override
-    public void tick() {
-        invalidate();
+    public SquareView(Context c) {
+        super(c);
+        initialized = false;
+        flock = new ArrayList<>();
+        tim = new Timer();
+
     }
 
-//    public class Timer extends Handler {
+//    private void check() {
+//        for (int i = 0; i < flock.size(); i++) {
+//            for (int j = i + 1; j < flock.size(); j++) {
+//                flock.get(i).check(flock.get(j));
+//            }
+//        }
+//    }
+//    @Override
+//    public void tick() {
+//        for (int i = 0; i < flock.size(); i++) {
+//            for (int j = i + 1; j < flock.size(); j++) {
+//                flock.get(i).check(flock.get(j));  // Check pair interactions
+//            }
+//        }
+//        invalidate();
+
+//    }
+
+
+
+    //    public class Timer extends Handler {
 //
 //        public Timer() {
 //            sendMessageDelayed(obtainMessage(), 0);
@@ -45,12 +69,7 @@ public class SquareView extends View implements TickListener{
 //            sendMessageDelayed(obtainMessage(), 25);
 //        }
 //    }
-    public SquareView(Context c) {
-        super(c);
-        initialized = false;
-        flock = new ArrayList<>();
-//        tim = new Timer();
-    }
+
 
     @Override
     public void onDraw(Canvas c) {
@@ -103,5 +122,20 @@ public class SquareView extends View implements TickListener{
         }
 
         return super.onTouchEvent(m);
+    }
+
+    @Override
+    public void tick() {
+
+    }
+
+    @Override
+    public void registerListener(TickListener listener) {
+
+    }
+
+    @Override
+    public void removeListener(TickListener listener) {
+
     }
 }
