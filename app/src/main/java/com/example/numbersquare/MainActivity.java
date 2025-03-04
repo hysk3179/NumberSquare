@@ -11,6 +11,9 @@ import androidx.core.view.WindowInsetsCompat;
 public class MainActivity extends AppCompatActivity {
 
     private SquareView sq;
+    /**
+     * Activity class that initializes the SquareView and sets it as the content view.
+     */
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);

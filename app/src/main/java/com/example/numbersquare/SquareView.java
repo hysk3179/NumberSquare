@@ -9,7 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
+
 
 public class SquareView extends View implements TickListener{
 
@@ -17,60 +17,22 @@ public class SquareView extends View implements TickListener{
     protected boolean initialized;
     private Square check;
     private Timer tim;
-    public boolean isStopped = false;
+    int startNum = 1;
 
     public SquareView(Context c) {
         super(c);
         initialized = false;
         flock = new ArrayList<>();
         tim = new Timer();
-
+        tim.registerListener(this);
     }
 
-//    private void check() {
-//        for (int i = 0; i < flock.size(); i++) {
-//            for (int j = i + 1; j < flock.size(); j++) {
-//                flock.get(i).check(flock.get(j));
-//            }
-//        }
-//    }
-//    @Override
-//    public void tick() {
-//        for (int i = 0; i < flock.size(); i++) {
-//            for (int j = i + 1; j < flock.size(); j++) {
-//                flock.get(i).check(flock.get(j));  // Check pair interactions
-//            }
-//        }
-//        invalidate();
-
-//    }
-
-
-
-    //    public class Timer extends Handler {
-//
-//        public Timer() {
-//            sendMessageDelayed(obtainMessage(), 0);
-//        }
-//
-//        @Override
-//        public void handleMessage(Message m) {
-//            for (var d : flock) {
-//                d.move();
-//            }
-//            if (flock.size() > 4) {
-//                for (int i = 0; i < 4; i++) {
-//                    for (int j = i + 1; j < 5; j++) {
-//                        flock.get(i).check(flock.get(j));
-//                    }
-//                }
-//            }
-//            invalidate();
-//            sendMessageDelayed(obtainMessage(), 25);
-//        }
-//    }
-
-
+    /**
+     * Initializes and draws a flock of non-overlapping Square objects onto the canvas.
+     * The flock is only initialized once, and each square is drawn after ensuring no overlap.
+     *
+     * @param c The canvas to draw the squares on.
+     */
     @Override
     public void onDraw(Canvas c) {
         float w = getWidth();
@@ -100,40 +62,71 @@ public class SquareView extends View implements TickListener{
             d.draw(c);
         }
     }
-
+    /**
+     * Handles touch events on the canvas. When the user touches the screen,
+     * it checks if any square in the flock overlaps with the touch point.
+     * If a square is touched, it changes its color to blue and stops it.
+     *
+     * @param m The motion event representing the touch action.
+     * @return true if the touch event is handled; false otherwise.
+     */
     @Override
-    public boolean onTouchEvent(MotionEvent m) {
-        if (m.getAction() == MotionEvent.ACTION_DOWN) {
-            float x = m.getX();
-            float y = m.getY();
+        public boolean onTouchEvent(MotionEvent m) {
+            if (m.getAction() == MotionEvent.ACTION_DOWN) {
+                float x = m.getX();
+                float y = m.getY();
 
-            for (var d : flock) {
-                for (int i = 0; i < 5; i++) {
-                    if (flock.get(i).isOverlapping(x,y)) {
-                        flock.get(i).setColor(Color.BLUE);
-                        invalidate();
-                        flock.get(i).stop(flock.get(i));
-
+                for (var d : flock) {
+                    if (d.isOverlapping(x,y)) {
+                        if (d.getId() == startNum) {
+                            d.setColor(Color.BLUE);
+                            d.stop();
+                            startNum = startNum + 1;
+                        }
                     }
                 }
+                return true;
             }
 
-            return true;
+            return super.onTouchEvent(m);
         }
-
-        return super.onTouchEvent(m);
-    }
-
+    /**
+     * Updates the state of the flock by checking for collisions and moving each square.
+     * It also triggers a redraw of the view by calling invalidate().
+     */
     @Override
     public void tick() {
-
+        checkForCollisions();
+        for (Square sq : flock){
+            sq.move();
+        }
+        invalidate();
     }
-
+    /**
+     * Checks for collisions between all pairs of squares in the flock.
+     * Each square is compared with every other square to detect potential collisions.
+     */
+    private void checkForCollisions() {
+        for (int i = 0; i < flock.size(); i++) {
+            for (int j = i + 1; j < flock.size(); j++) {
+                flock.get(i).check(flock.get(j));
+            }
+        }
+    }
+    /**
+     * Registers a tick listener.
+     *
+     * @param listener The listener to register.
+     */
     @Override
     public void registerListener(TickListener listener) {
 
     }
-
+    /**
+     * Removes a registered tick listener.
+     *
+     * @param listener The listener to remove.
+     */
     @Override
     public void removeListener(TickListener listener) {
 
