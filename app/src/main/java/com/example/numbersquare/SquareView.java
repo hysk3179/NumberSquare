@@ -5,8 +5,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +20,9 @@ public class SquareView extends View implements TickListener{
     protected boolean initialized;
     private Square check;
     private Timer tim;
+    private int level = 2;
     int startNum = 1;
+    boolean done = false;
 
     public SquareView(Context c) {
         super(c);
@@ -38,12 +43,17 @@ public class SquareView extends View implements TickListener{
         float w = getWidth();
         float h = getHeight();
         if (!initialized) {
-            flock.add(new Square(w,h,1));
+            flock.clear();
+            flock.add(new Square(getResources(), w,h,1));
+//            check = new Square(getResources(), w,h,1);
+//            flock.add(check);
+//            check.speedingUp(level);
+
             for (int i = 2; i < 6; i ++) {
                 Square check;
                 boolean overlaps;
                 do {
-                    check = new Square(w,h);
+                    check = new Square(getResources(), w, h, i);
                     overlaps = false;
                     for (int j = 0; j < flock.size(); j++) {
                         if (check.isOverlapping(flock.get(j))) {
@@ -54,6 +64,7 @@ public class SquareView extends View implements TickListener{
                 } while (overlaps);
                 check.counter();
                 flock.add(check);
+                //check.speedingUp(level);
             }
 
             initialized = true;
@@ -79,17 +90,33 @@ public class SquareView extends View implements TickListener{
                 for (var d : flock) {
                     if (d.isOverlapping(x,y)) {
                         if (d.getId() == startNum) {
-                            d.setColor(Color.BLUE);
+//                            d.setColor(Color.WHITE);
                             d.stop();
                             startNum = startNum + 1;
+                            d.change();
+                            if(startNum == 6){
+                                done = true;
+                                initialized = false;
+                                invalidate();
+                            }
                         }
                     }
+                }
+                if (done) {
+                    Toast toast = Toast.makeText(getContext(), "level" + level, Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER, 0, 0);  // Center the Toast
+                    toast.show();
+                    level ++;
+                    invalidate();
+                    done = false;
+                    startNum = 1;
                 }
                 return true;
             }
 
             return super.onTouchEvent(m);
         }
+
     /**
      * Updates the state of the flock by checking for collisions and moving each square.
      * It also triggers a redraw of the view by calling invalidate().

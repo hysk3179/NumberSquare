@@ -1,6 +1,8 @@
 package com.example.numbersquare;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.PointF;
 import android.graphics.Color;
@@ -21,11 +23,15 @@ public class Square {
     float velocitydy = (float) (Math.random() * 10) - 5; //-5 ~ 5
     private Bitmap img;
     private Bitmap icedSquare;
+    private boolean iced;
+    private Paint fakeIce;
 
     PointF p = new PointF(velocitydx, velocitydy);
 
 
-    public Square(float screenWidth, float screenHeight, int i) {
+    public Square(Resources res, float screenWidth, float screenHeight, int i) {
+        iced = false;
+
         height = screenHeight;
         width = screenWidth;
 
@@ -37,23 +43,28 @@ public class Square {
         y = (top + size / 2) + 22;
         id = i;
         this.color = Color.GREEN;
-
+        icedSquare = BitmapFactory.decodeResource(res, R.drawable.iced);
+        icedSquare = Bitmap.createScaledBitmap(icedSquare, (int)size, (int)size, true);
+        img = icedSquare;
+        fakeIce = new Paint();
+        fakeIce.setColor(Color.BLACK);
     }
 
-    public Square(float screenWidth, float screenHeight) {
-        height = screenHeight;
-        width = screenWidth;
+//    public Square(float screenWidth, float screenHeight) {
+//        height = screenHeight;
+//        width = screenWidth;
+//
+//        float size = screenWidth / 5;
+//        float left = (float) ((screenWidth - size) * Math.random());
+//        float top = (float) ((screenHeight - size) * Math.random());
+//        bounds = new RectF(left, top, left + size, top + size);
+//        x = (left + size / 2) - 22;
+//        y = (top + size / 2) + 22;
+//        this.color = Color.GREEN;
+//    }
 
-        float size = screenWidth / 5;
-        float left = (float) ((screenWidth - size) * Math.random());
-        float top = (float) ((screenHeight - size) * Math.random());
-        bounds = new RectF(left, top, left + size, top + size);
-        x = (left + size / 2) - 22;
-        y = (top + size / 2) + 22;
-        this.color = Color.GREEN;
-    }
-    public icedSquare() {
-
+    public void change() {
+        iced = !iced;
     }
     /**
      * Sets the color of the square.
@@ -152,9 +163,14 @@ public class Square {
         textPaint.setColor(Color.RED);
         textPaint.setTextSize(100);
 
-
-        c.drawRect(bounds, paint);
+        if(!iced) {
+            c.drawRect(bounds, paint);
+        }
         c.drawText(Integer.toString(id), bounds.centerX() - 20, bounds.centerY() + 20, textPaint);
+
+        if(iced){
+            c.drawBitmap(img, bounds.left, bounds.top, fakeIce);
+        }
     }
 
     /**
@@ -167,4 +183,9 @@ public class Square {
             number = 1;
         }
     }
+
+//    public void speedingUp(int i){
+//        p.x *= i ;
+//        p.y *= i;
+//    }
 }
