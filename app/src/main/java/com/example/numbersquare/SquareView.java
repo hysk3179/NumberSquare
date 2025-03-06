@@ -1,6 +1,7 @@
 package com.example.numbersquare;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Handler;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class SquareView extends View implements TickListener{
+public class SquareView extends androidx.appcompat.widget.AppCompatImageView implements TickListener{
 
     private List<Square> flock;
     protected boolean initialized;
@@ -23,13 +24,16 @@ public class SquareView extends View implements TickListener{
     private int level = 2;
     int startNum = 1;
     boolean done = false;
+    private Bitmap background;
 
-    public SquareView(Context c) {
+    public SquareView(Context c, boolean dd) {
         super(c);
         initialized = false;
         flock = new ArrayList<>();
         tim = new Timer();
         tim.registerListener(this);
+        setBackgroundResource(R.drawable.temple);
+        setScaleType(ScaleType.FIT_XY);
     }
 
     /**

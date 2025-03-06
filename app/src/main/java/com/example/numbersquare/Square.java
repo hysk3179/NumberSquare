@@ -22,7 +22,9 @@ public class Square {
     float velocitydx = (float) (Math.random() * 10) - 5; //-5 ~ 5
     float velocitydy = (float) (Math.random() * 10) - 5; //-5 ~ 5
     private Bitmap img;
+    private Bitmap imgWater;
     private Bitmap icedSquare;
+    private Bitmap water;
     private boolean iced;
     private Paint fakeIce;
 
@@ -43,11 +45,15 @@ public class Square {
         y = (top + size / 2) + 22;
         id = i;
         this.color = Color.GREEN;
+        water = BitmapFactory.decodeResource(res, R.drawable.water);
+        water = Bitmap.createScaledBitmap(water, (int)size, (int)size, true);
+        imgWater = water;
         icedSquare = BitmapFactory.decodeResource(res, R.drawable.iced);
         icedSquare = Bitmap.createScaledBitmap(icedSquare, (int)size, (int)size, true);
         img = icedSquare;
         fakeIce = new Paint();
         fakeIce.setColor(Color.BLACK);
+        fakeIce.setTextSize(100);
     }
 
 //    public Square(float screenWidth, float screenHeight) {
@@ -154,19 +160,19 @@ public class Square {
      * @param c The canvas on which to draw the square.
      */
     public void draw(Canvas c) {
-        Paint paint = new Paint();
-        paint.setColor(color);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(20);
-
-        Paint textPaint = new Paint();
-        textPaint.setColor(Color.RED);
-        textPaint.setTextSize(100);
-
+//        Paint paint = new Paint();
+//        paint.setColor(color);
+//        paint.setStyle(Paint.Style.STROKE);
+//        paint.setStrokeWidth(20);
+//
+//        Paint textPaint = new Paint();
+//        textPaint.setColor(Color.RED);
+//        textPaint.setTextSize(100);
+//
         if(!iced) {
-            c.drawRect(bounds, paint);
+            c.drawBitmap(imgWater, bounds.left, bounds.top, fakeIce);
+            c.drawText(Integer.toString(id), bounds.centerX() -20, bounds.centerY() +20, fakeIce);
         }
-        c.drawText(Integer.toString(id), bounds.centerX() - 20, bounds.centerY() + 20, textPaint);
 
         if(iced){
             c.drawBitmap(img, bounds.left, bounds.top, fakeIce);
