@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
 import android.view.Gravity;
@@ -25,6 +26,7 @@ public class SquareView extends androidx.appcompat.widget.AppCompatImageView imp
     int startNum = 1;
     boolean done = false;
     private Bitmap background;
+    private MediaPlayer soundtrack;
 
     public SquareView(Context c, boolean dd) {
         super(c);
@@ -34,7 +36,28 @@ public class SquareView extends androidx.appcompat.widget.AppCompatImageView imp
         tim.registerListener(this);
         setBackgroundResource(R.drawable.temple);
         setScaleType(ScaleType.FIT_XY);
+        soundtrack = MediaPlayer.create(c, R.raw.boxstep);
+        soundtrack.setLooping(true);
+        soundtrack.start();
+
+
     }
+    public void pauseMusic() {
+        if (Prefs.getMusicPref(getContext())) {
+            soundtrack.pause();
+        }
+    }
+
+    public void resumeMusic() {
+        if (Prefs.getMusicPref(getContext())) {
+            soundtrack.start();
+        }
+    }
+
+    public void unloadMusic() {
+        soundtrack.release();
+    }
+
 
     /**
      * Initializes and draws a flock of non-overlapping Square objects onto the canvas.
@@ -68,13 +91,20 @@ public class SquareView extends androidx.appcompat.widget.AppCompatImageView imp
                 } while (overlaps);
                 check.counter();
                 flock.add(check);
-                //check.speedingUp(level);
+                check.speedingUp(Prefs.getSpeedPref(getContext()));
             }
 
             initialized = true;
         }
         for (var d : flock) {
             d.draw(c);
+//            if(Prefs.getSpeedPref(getContext()) > 0) {
+//                d.speedingUp(Prefs.getSpeedPref(getContext()));
+//                d.draw(c);
+//            }
+//            else {
+//                d.draw(c);
+//            }
         }
     }
     /**
@@ -107,6 +137,7 @@ public class SquareView extends androidx.appcompat.widget.AppCompatImageView imp
                     }
                 }
                 if (done) {
+
                     Toast toast = Toast.makeText(getContext(), "level" + level, Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.CENTER, 0, 0);  // Center the Toast
                     toast.show();
@@ -162,4 +193,5 @@ public class SquareView extends androidx.appcompat.widget.AppCompatImageView imp
     public void removeListener(TickListener listener) {
 
     }
+
 }

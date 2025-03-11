@@ -160,15 +160,7 @@ public class Square {
      * @param c The canvas on which to draw the square.
      */
     public void draw(Canvas c) {
-//        Paint paint = new Paint();
-//        paint.setColor(color);
-//        paint.setStyle(Paint.Style.STROKE);
-//        paint.setStrokeWidth(20);
-//
-//        Paint textPaint = new Paint();
-//        textPaint.setColor(Color.RED);
-//        textPaint.setTextSize(100);
-//
+
         if(!iced) {
             c.drawBitmap(imgWater, bounds.left, bounds.top, fakeIce);
             c.drawText(Integer.toString(id), bounds.centerX() -20, bounds.centerY() +20, fakeIce);
@@ -190,8 +182,8 @@ public class Square {
         }
     }
 
-//    public void speedingUp(int i){
-//        p.x *= i ;
-//        p.y *= i;
-//    }
+    public void speedingUp(int i){
+        p.x *= i ;
+        p.y *= i;
+    }
 }

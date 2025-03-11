@@ -23,11 +23,29 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
-//        Intent i =getIntent();
-        sq = new SquareView(this, false);
+        Intent i =getIntent();
+        boolean mode = i.getBooleanExtra("Start", true);
+        sq = new SquareView(this, mode);
         setContentView(sq);
         Toast toast = Toast.makeText(getApplicationContext(), "Level 1", Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);  // Center the Toast
         toast.show();
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        sq.pauseMusic();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        sq.resumeMusic();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        sq.unloadMusic();
     }
 }
