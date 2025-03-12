@@ -27,6 +27,7 @@ public class Square {
     private Bitmap water;
     private boolean iced;
     private Paint fakeIce;
+    private int speed;
 
     PointF p = new PointF(velocitydx, velocitydy);
 
@@ -56,18 +57,6 @@ public class Square {
         fakeIce.setTextSize(100);
     }
 
-//    public Square(float screenWidth, float screenHeight) {
-//        height = screenHeight;
-//        width = screenWidth;
-//
-//        float size = screenWidth / 5;
-//        float left = (float) ((screenWidth - size) * Math.random());
-//        float top = (float) ((screenHeight - size) * Math.random());
-//        bounds = new RectF(left, top, left + size, top + size);
-//        x = (left + size / 2) - 22;
-//        y = (top + size / 2) + 22;
-//        this.color = Color.GREEN;
-//    }
 
     public void change() {
         iced = !iced;
@@ -183,7 +172,7 @@ public class Square {
     }
 
     public void speedingUp(int i){
-        p.x *= i ;
+        p.x *= i;
         p.y *= i;
     }
 }

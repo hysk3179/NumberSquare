@@ -47,8 +47,6 @@ public class Titlescreen extends AppCompatActivity {
                 }
 
             } else {
-                //distinguish between
-                //right/left facing ducks.
                 Intent i = new Intent(this, MainActivity.class);
                 if (x < w*0.5) {
                     i.putExtra("Start", true);
@@ -56,7 +54,7 @@ public class Titlescreen extends AppCompatActivity {
                     i.putExtra("Start", false);
                 }
                 startActivity(i);
-                finish();//close current activity
+                finish();
             }
         }
         return true;

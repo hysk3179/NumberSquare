@@ -5,13 +5,16 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +30,7 @@ public class SquareView extends androidx.appcompat.widget.AppCompatImageView imp
     boolean done = false;
     private Bitmap background;
     private MediaPlayer soundtrack;
+    int number = Prefs.getNumberPref(getContext());
 
     public SquareView(Context c, boolean dd) {
         super(c);
@@ -36,11 +40,15 @@ public class SquareView extends androidx.appcompat.widget.AppCompatImageView imp
         tim.registerListener(this);
         setBackgroundResource(R.drawable.temple);
         setScaleType(ScaleType.FIT_XY);
-        soundtrack = MediaPlayer.create(c, R.raw.boxstep);
+        if (Prefs.getMusicTrackPref(getContext())) {
+            soundtrack = MediaPlayer.create(c, R.raw.boxstep);
+        } else {
+            soundtrack = MediaPlayer.create(c, R.raw.space_jazz);
+        }
         soundtrack.setLooping(true);
-        soundtrack.start();
-
-
+        if (Prefs.getMusicPref(c)) {
+            soundtrack.start();
+        }
     }
     public void pauseMusic() {
         if (Prefs.getMusicPref(getContext())) {
@@ -69,14 +77,16 @@ public class SquareView extends androidx.appcompat.widget.AppCompatImageView imp
     public void onDraw(Canvas c) {
         float w = getWidth();
         float h = getHeight();
+        int number = Prefs.getNumberPref(getContext());
         if (!initialized) {
             flock.clear();
-            flock.add(new Square(getResources(), w,h,1));
-//            check = new Square(getResources(), w,h,1);
-//            flock.add(check);
-//            check.speedingUp(level);
 
-            for (int i = 2; i < 6; i ++) {
+
+            int speed = Prefs.getSpeedPref(getContext());
+            Square firstSquare = new Square(getResources(), w,h,1);
+            firstSquare.speedingUp(speed);
+            flock.add(firstSquare);
+            for (int i = 2; i < number + 1; i ++) {
                 Square check;
                 boolean overlaps;
                 do {
@@ -90,21 +100,14 @@ public class SquareView extends androidx.appcompat.widget.AppCompatImageView imp
                     }
                 } while (overlaps);
                 check.counter();
+                check.speedingUp(speed);
                 flock.add(check);
-                check.speedingUp(Prefs.getSpeedPref(getContext()));
             }
 
             initialized = true;
         }
         for (var d : flock) {
             d.draw(c);
-//            if(Prefs.getSpeedPref(getContext()) > 0) {
-//                d.speedingUp(Prefs.getSpeedPref(getContext()));
-//                d.draw(c);
-//            }
-//            else {
-//                d.draw(c);
-//            }
         }
     }
     /**
@@ -128,7 +131,7 @@ public class SquareView extends androidx.appcompat.widget.AppCompatImageView imp
                             d.stop();
                             startNum = startNum + 1;
                             d.change();
-                            if(startNum == 6){
+                            if(startNum == number +1){
                                 done = true;
                                 initialized = false;
                                 invalidate();
