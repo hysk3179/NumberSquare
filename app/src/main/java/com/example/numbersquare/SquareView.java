@@ -25,12 +25,13 @@ public class SquareView extends androidx.appcompat.widget.AppCompatImageView imp
     protected boolean initialized;
     private Square check;
     private Timer tim;
-    private int level = 2;
+//    private int level = 2;
     int startNum = 1;
     boolean done = false;
     private Bitmap background;
     private MediaPlayer soundtrack;
     int number = Prefs.getNumberPref(getContext());
+    private CountingGame cg;
 
     public SquareView(Context c, boolean dd) {
         super(c);
@@ -49,7 +50,11 @@ public class SquareView extends androidx.appcompat.widget.AppCompatImageView imp
         if (Prefs.getMusicPref(c)) {
             soundtrack.start();
         }
+
+        cg = new CountingGame(Prefs.getNumberPref(getContext()));
+
     }
+
     public void pauseMusic() {
         if (Prefs.getMusicPref(getContext())) {
             soundtrack.pause();
@@ -126,25 +131,31 @@ public class SquareView extends androidx.appcompat.widget.AppCompatImageView imp
 
                 for (var d : flock) {
                     if (d.isOverlapping(x,y)) {
-                        if (d.getId() == startNum) {
-//                            d.setColor(Color.WHITE);
+                        TouchStatus c = cg.getTouchStatus(d);
+                        if (TouchStatus.CONTINUE){
+                            if (d.getId() == startNum) {
                             d.stop();
                             startNum = startNum + 1;
                             d.change();
-                            if(startNum == number +1){
+                            if(startNum == Integer.valueOf(cg.getSquareLabels().get(-1))){
                                 done = true;
                                 initialized = false;
                                 invalidate();
                             }
-                        }
+                        }else if (TouchStatus.TRY_AGAIN){
+                            Toast toast = Toast.makeText(getContext(), cg.getTryAgainLabel(getResources()), Toast.LENGTH_SHORT);
+                            toast.setGravity(Gravity.CENTER, 0, 0);  // Center the Toast
+                            toast.show();
+                        } else {
+                            //next level;
+                            }
                     }
                 }
                 if (done) {
-
-                    Toast toast = Toast.makeText(getContext(), "level" + level, Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(getContext(), "level" + cg.getNextLevelLabel(getResources()), Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.CENTER, 0, 0);  // Center the Toast
                     toast.show();
-                    level ++;
+//                    level ++;
                     invalidate();
                     done = false;
                     startNum = 1;
