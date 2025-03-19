@@ -9,6 +9,8 @@ import java.util.List;
 public class CountingGame implements GameStyle{
     private int level =2 ;
     private List<String> sqLst;
+    private int nextNumber;
+
 
     CountingGame(int num){
         level = 2;
@@ -35,6 +37,11 @@ public class CountingGame implements GameStyle{
 
     @Override
     public TouchStatus getTouchStatus(Square c) {
+        // int amos = Integer.parseInt(ns.getLabel())
+// get the getLable ()
+
+// ifnextNumber > lavbel
+
         if(c == //the right order of square){
             return TouchStatus.CONTINUE;
         } else if (c != //the right order of square){
