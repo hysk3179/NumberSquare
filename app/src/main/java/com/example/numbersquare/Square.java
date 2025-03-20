@@ -115,6 +115,9 @@ public class Square {
         return id;
     }
 
+//    public int getLabel (Square s) {
+//        return s.getId();
+//    }
     /**
      * Moves the object by its current velocity, reversing direction if it hits the boundary.
      * The object's position is updated based on its velocity, and it bounces off the edges.
