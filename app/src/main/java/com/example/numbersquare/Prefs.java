@@ -94,6 +94,10 @@ public class Prefs extends AppCompatActivity {
         return PreferenceManager.getDefaultSharedPreferences(c).getBoolean("Music_change", true);
     }
 
+    public static boolean getModePref(Context c) {
+        return PreferenceManager.getDefaultSharedPreferences(c).getBoolean("Mode_change", true );
+    }
+
     public static class SettingsFragment extends PreferenceFragmentCompat {
         @Override
         public void onCreatePreferences(Bundle b, String s) {
@@ -115,6 +119,14 @@ public class Prefs extends AppCompatActivity {
             musicCheck.setDefaultValue(true);
             musicCheck.setKey("Music_change");
             screen.addPreference(musicCheck);
+
+            var modeCheck = new SwitchPreference(context);
+            modeCheck.setTitle("Simple switch to change the game mode");
+            modeCheck.setSummaryOn("Number mode");
+            modeCheck.setSummaryOff("String mode");
+            modeCheck.setDefaultValue(true);
+            modeCheck.setKey("Mode_change");
+            screen.addPreference(modeCheck);
 
             ListPreference squareSpeed = new ListPreference(context);
             String[] entries = {"Slow : 1 ", "Medium : 2 ", "Fast : 3"};

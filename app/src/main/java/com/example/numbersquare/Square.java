@@ -8,6 +8,7 @@ import android.graphics.PointF;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.util.Log;
 
 public class Square {
 
@@ -17,6 +18,7 @@ public class Square {
     private float y;
     static private int number = 1;
     int id;
+    private String word;
     float width;
     float height;
     float velocitydx = (float) (Math.random() * 10) - 5; //-5 ~ 5
@@ -32,7 +34,31 @@ public class Square {
     PointF p = new PointF(velocitydx, velocitydy);
 
 
-    public Square(Resources res, float screenWidth, float screenHeight, int i) {
+//    public Square(Resources res, float screenWidth, float screenHeight, int i) {
+//        iced = false;
+//
+//        height = screenHeight;
+//        width = screenWidth;
+//
+//        float size = screenWidth / 5;
+//        float left = (float) ((screenWidth - size) * Math.random());
+//        float top = (float) ((screenHeight - size) * Math.random());
+//        bounds = new RectF(left, top, left + size, top + size);
+//        x = (left + size / 2) - 22;
+//        y = (top + size / 2) + 22;
+//        id = i;
+//        this.color = Color.GREEN;
+//        water = BitmapFactory.decodeResource(res, R.drawable.water);
+//        water = Bitmap.createScaledBitmap(water, (int)size, (int)size, true);
+//        imgWater = water;
+//        icedSquare = BitmapFactory.decodeResource(res, R.drawable.iced);
+//        icedSquare = Bitmap.createScaledBitmap(icedSquare, (int)size, (int)size, true);
+//        img = icedSquare;
+//        fakeIce = new Paint();
+//        fakeIce.setColor(Color.BLACK);
+//        fakeIce.setTextSize(100);
+//    }
+    public Square(Resources res, float screenWidth, float screenHeight, String s) {
         iced = false;
 
         height = screenHeight;
@@ -44,7 +70,8 @@ public class Square {
         bounds = new RectF(left, top, left + size, top + size);
         x = (left + size / 2) - 22;
         y = (top + size / 2) + 22;
-        id = i;
+        word = s;
+        Log.d("Square", "Word: " + word);
         this.color = Color.GREEN;
         water = BitmapFactory.decodeResource(res, R.drawable.water);
         water = Bitmap.createScaledBitmap(water, (int)size, (int)size, true);
@@ -56,7 +83,6 @@ public class Square {
         fakeIce.setColor(Color.BLACK);
         fakeIce.setTextSize(100);
     }
-
 
     public void change() {
         iced = !iced;
@@ -112,12 +138,9 @@ public class Square {
     }
 
     public int getId() {
-        return id;
+        return Integer.parseInt(word);
     }
-
-//    public int getLabel (Square s) {
-//        return s.getId();
-//    }
+    public String getWord() {return word; }
     /**
      * Moves the object by its current velocity, reversing direction if it hits the boundary.
      * The object's position is updated based on its velocity, and it bounces off the edges.
@@ -152,27 +175,39 @@ public class Square {
      * @param c The canvas on which to draw the square.
      */
     public void draw(Canvas c) {
+        // if the number is inside
+//            if(!iced) {
+//                c.drawBitmap(imgWater, bounds.left, bounds.top, fakeIce);
+//                c.drawText(Integer.toString(id), bounds.centerX() -20, bounds.centerY() +20, fakeIce);
+//                c.drawText(word, bounds.centerX() -20, bounds.centerY() +20, fakeIce);
+//            }
+//
+//            if(iced){
+//                c.drawBitmap(img, bounds.left, bounds.top, fakeIce);
+//            }
 
-        if(!iced) {
-            c.drawBitmap(imgWater, bounds.left, bounds.top, fakeIce);
-            c.drawText(Integer.toString(id), bounds.centerX() -20, bounds.centerY() +20, fakeIce);
-        }
+        //if the alphabet inside
 
-        if(iced){
-            c.drawBitmap(img, bounds.left, bounds.top, fakeIce);
-        }
+            if(!iced) {
+                c.drawBitmap(imgWater, bounds.left, bounds.top, fakeIce);
+                c.drawText(word, bounds.centerX() -20, bounds.centerY() +20, fakeIce);
+            }
+
+            if(iced){
+                c.drawBitmap(img, bounds.left, bounds.top, fakeIce);
+            }
     }
 
     /**
      * Increments the counter and updates the ID. Resets the counter to 1 when it reaches 5.
      */
-    public void counter() {
-        number++;
-        id = number;
-        if (number == 5) {
-            number = 1;
-        }
-    }
+//    public void counter() {
+//        number++;
+//        number = Integer.parseInt(word);
+//        if (number == 5) {
+//            number = 1;
+//        }
+//    }
 
     public void speedingUp(int i){
         p.x *= i;

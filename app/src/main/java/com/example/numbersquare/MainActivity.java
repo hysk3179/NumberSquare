@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
         Toast toast = Toast.makeText(getApplicationContext(), "Level 1", Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);  // Center the Toast
         toast.show();
+
     }
     @Override
     public void onPause() {

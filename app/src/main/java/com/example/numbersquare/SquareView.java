@@ -32,6 +32,7 @@ public class SquareView extends androidx.appcompat.widget.AppCompatImageView imp
     private MediaPlayer soundtrack;
     int setNumber = Prefs.getNumberPref(getContext());
     private CountingGame cg;
+    private SpellingGame sg;
 
     public SquareView(Context c, boolean dd) {
         super(c);
@@ -52,22 +53,30 @@ public class SquareView extends androidx.appcompat.widget.AppCompatImageView imp
         }
 
         cg = new CountingGame(Prefs.getNumberPref(getContext()));
+        sg = new SpellingGame(Prefs.getNumberPref(getContext()));
 
     }
-
+    /**
+     * Pauses the music if the music preference is enabled.
+     */
     public void pauseMusic() {
         if (Prefs.getMusicPref(getContext())) {
 
             soundtrack.pause();
         }
     }
-
+    /**
+     * Resumes the music if the music preference is enabled.
+     */
     public void resumeMusic() {
         if (Prefs.getMusicPref(getContext())) {
             soundtrack.start();
         }
     }
 
+    /**
+     * Releases the music resources and unloads the soundtrack.
+     */
     public void unloadMusic() {
         soundtrack.release();
     }
@@ -84,36 +93,69 @@ public class SquareView extends androidx.appcompat.widget.AppCompatImageView imp
         float w = getWidth();
         float h = getHeight();
         int number = Prefs.getNumberPref(getContext());
-        if (!initialized) {
-            flock.clear();
-
-
-            int speed = Prefs.getSpeedPref(getContext());
-            Square firstSquare = new Square(getResources(), w,h,1);
-            firstSquare.speedingUp(speed);
-            flock.add(firstSquare);
-            for (int i = 2; i < number + 1; i ++) {
-                Square check;
-                boolean overlaps;
-                do {
-                    check = new Square(getResources(), w, h, i);
-                    overlaps = false;
-                    for (int j = 0; j < flock.size(); j++) {
-                        if (check.isOverlapping(flock.get(j))) {
-                            overlaps = true;
-                            break;
+        if (Prefs.getModePref(getContext())) {
+            if (!initialized) {
+                flock.clear();
+                int speed = Prefs.getSpeedPref(getContext());
+                Square firstSquare = new Square(getResources(), w, h, cg.getSquareLabels().get(0));
+                firstSquare.speedingUp(speed);
+                flock.add(firstSquare);
+                for (int i = 2; i < number + 1; i++) {
+                    Square check;
+                    boolean overlaps;
+                    do {
+                        check = new Square(getResources(), w, h, cg.getSquareLabels().get(i - 1));
+                        overlaps = false;
+                        for (int j = 0; j < flock.size(); j++) {
+                            if (check.isOverlapping(flock.get(j))) {
+                                overlaps = true;
+                                break;
+                            }
                         }
-                    }
-                } while (overlaps);
-                check.counter();
-                check.speedingUp(speed);
-                flock.add(check);
+                    } while (overlaps);
+//                    check.counter();
+                    check.speedingUp(speed);
+                    flock.add(check);
+                }
+
+                initialized = true;
+            }
+            for (var d : flock) {
+                d.draw(c);
+            }
+        } else if (!Prefs.getModePref(getContext())) {
+            if (!initialized) {
+                flock.clear();
+                int speed = Prefs.getSpeedPref(getContext());
+                String test2 = sg.getSquareLabels().get(0);
+
+                Square firstSquare = new Square(getResources(), w, h, test2);
+                firstSquare.speedingUp(speed);
+                flock.add(firstSquare);
+                for (int i = 2; i < number + 1; i++) {
+                    Square check;
+                    boolean overlaps;
+                    do {
+                        check = new Square(getResources(), w, h, sg.getSquareLabels().get(i - 1));
+                        overlaps = false;
+                        for (int j = 0; j < flock.size(); j++) {
+                            if (check.isOverlapping(flock.get(j))) {
+                                overlaps = true;
+                                break;
+                            }
+                        }
+                    } while (overlaps);
+//                    check.counter();
+                    check.speedingUp(speed);
+                    flock.add(check);
+                }
+
+                initialized = true;
+            }
+            for (var d : flock) {
+                d.draw(c);
             }
 
-            initialized = true;
-        }
-        for (var d : flock) {
-            d.draw(c);
         }
     }
     /**
@@ -127,32 +169,64 @@ public class SquareView extends androidx.appcompat.widget.AppCompatImageView imp
     @Override
         public boolean onTouchEvent(MotionEvent m) {
             if (m.getAction() == MotionEvent.ACTION_DOWN) {
-                float x = m.getX();
-                float y = m.getY();
-
-
-                for (var d : flock) {
-                    if (d.isOverlapping(x, y)) {
-                        TouchStatus c = cg.getTouchStatus(d);
-                        if (c == TouchStatus.CONTINUE) {
-                            if (d.getId() == startNum) {
-                                d.stop();
-                                startNum = startNum + 1;
-                                d.change();
-                            }
-                        } else if (c == TouchStatus.TRY_AGAIN) {
-                                Toast toast = Toast.makeText(getContext(), cg.getTryAgainLabel(getResources()), Toast.LENGTH_SHORT);
+                if (Prefs.getModePref(getContext())) {
+                    float x = m.getX();
+                    float y = m.getY();
+                    for (var d : flock) {
+                        if (d.isOverlapping(x, y)) {
+                            TouchStatus c = cg.getTouchStatus(d);
+                            if (c == TouchStatus.CONTINUE) {
+                                if (d.getId() == startNum) {
+                                    d.stop();
+                                    startNum = startNum + 1;
+                                    d.change();
+                                }
+                            } else if (c == TouchStatus.TRY_AGAIN) {
+                                Toast toast = Toast.makeText(getContext(), sg.getTryAgainLabel(getResources()), Toast.LENGTH_SHORT);
                                 toast.setGravity(Gravity.CENTER, 0, 0);  // Center the Toast
                                 toast.show();
-                        } else if (c == TouchStatus.LEVEL_COMPLETE) {
 
-                            Toast toast = Toast.makeText(getContext(), "level" + cg.getNextLevelLabel(getResources()), Toast.LENGTH_SHORT);
-                            toast.setGravity(Gravity.CENTER, 0, 0);  // Center the Toast
-                            toast.show();
-                            initialized = false;
-                            startNum = 1;
-                            invalidate();
+                            } else if (c == TouchStatus.LEVEL_COMPLETE) {
+                                Toast toast = Toast.makeText(getContext(), "level" + cg.getNextLevelLabel(getResources()), Toast.LENGTH_SHORT);
+                                //                            Toast toast = Toast.makeText(getContext(), "level" + sg.getNextLevelLabel(getResources()), Toast.LENGTH_SHORT);
+                                toast.setGravity(Gravity.CENTER, 0, 0);  // Center the Toast
+                                toast.show();
+                                initialized = false;
+                                startNum = 1;
+                                invalidate();
 
+                            }
+                        }
+                    }
+                } else if (!Prefs.getModePref(getContext())) {
+                    float x = m.getX();
+                    float y = m.getY();
+                    for (var d : flock) {
+                        if (d.isOverlapping(x, y)) {
+                            TouchStatus c = sg.getTouchStatus(d);
+                            if (c == TouchStatus.CONTINUE) {
+//                                if (d.getWord() == startNum) {
+                                    d.stop();
+                                    startNum = startNum + 1;
+                                    d.change();
+//                                }
+                            } else if (c == TouchStatus.TRY_AGAIN) {
+                                Toast toast = Toast.makeText(getContext(), sg.getSentence(), Toast.LENGTH_SHORT);
+                                toast.setGravity(Gravity.CENTER, 0, 0);  // Center the Toast
+                                toast.show();
+                                Toast toast1 = Toast.makeText(getContext(), cg.getTryAgainLabel(getResources()), Toast.LENGTH_SHORT);
+                                //                                Toast toast = Toast.makeText(getContext(), sg.getTryAgainLabel(getResources()), Toast.LENGTH_SHORT);
+                                toast1.setGravity(Gravity.CENTER, 0, 0);  // Center the Toast
+                                toast1.show();
+                            } else if (c == TouchStatus.LEVEL_COMPLETE) {
+                                Toast toast = Toast.makeText(getContext(), "level" + sg.getNextLevelLabel(getResources()), Toast.LENGTH_SHORT);
+                                //                            Toast toast = Toast.makeText(getContext(), "level" + sg.getNextLevelLabel(getResources()), Toast.LENGTH_SHORT);
+                                toast.setGravity(Gravity.CENTER, 0, 0);  // Center the Toast
+                                toast.show();
+                                initialized = false;
+                                startNum = 1;
+                                invalidate();
+                            }
                         }
                     }
                 }
@@ -201,5 +275,4 @@ public class SquareView extends androidx.appcompat.widget.AppCompatImageView imp
     public void removeListener(TickListener listener) {
 
     }
-
 }
