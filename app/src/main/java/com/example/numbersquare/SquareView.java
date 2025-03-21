@@ -57,6 +57,7 @@ public class SquareView extends androidx.appcompat.widget.AppCompatImageView imp
 
     public void pauseMusic() {
         if (Prefs.getMusicPref(getContext())) {
+
             soundtrack.pause();
         }
     }
@@ -129,6 +130,7 @@ public class SquareView extends androidx.appcompat.widget.AppCompatImageView imp
                 float x = m.getX();
                 float y = m.getY();
 
+
                 for (var d : flock) {
                     if (d.isOverlapping(x, y)) {
                         TouchStatus c = cg.getTouchStatus(d);
@@ -137,29 +139,24 @@ public class SquareView extends androidx.appcompat.widget.AppCompatImageView imp
                                 d.stop();
                                 startNum = startNum + 1;
                                 d.change();
-                                if (startNum == Integer.parseInt(cg.getSquareLabels().get(-1))) {
-                                    done = true;
-                                    initialized = false;
-                                    invalidate();
-                                }
-                            } else if (c == TouchStatus.TRY_AGAIN) {
+                            }
+                        } else if (c == TouchStatus.TRY_AGAIN) {
                                 Toast toast = Toast.makeText(getContext(), cg.getTryAgainLabel(getResources()), Toast.LENGTH_SHORT);
                                 toast.setGravity(Gravity.CENTER, 0, 0);  // Center the Toast
                                 toast.show();
-                            } else if (c == TouchStatus.LEVEL_COMPLETE) {
-                                Toast toast = Toast.makeText(getContext(), "level" + cg.getNextLevelLabel(getResources()), Toast.LENGTH_SHORT);
-                                toast.setGravity(Gravity.CENTER, 0, 0);  // Center the Toast
-                                toast.show();
-                                invalidate();
-                                done = false;
-                                startNum = 1;
-                            }
+                        } else if (c == TouchStatus.LEVEL_COMPLETE) {
+
+                            Toast toast = Toast.makeText(getContext(), "level" + cg.getNextLevelLabel(getResources()), Toast.LENGTH_SHORT);
+                            toast.setGravity(Gravity.CENTER, 0, 0);  // Center the Toast
+                            toast.show();
+                            initialized = false;
+                            startNum = 1;
+                            invalidate();
+
                         }
                     }
                 }
-                return true;
             }
-
             return super.onTouchEvent(m);
         }
 

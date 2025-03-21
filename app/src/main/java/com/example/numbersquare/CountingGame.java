@@ -9,14 +9,15 @@ import java.util.List;
 public class CountingGame implements GameStyle{
     private int level =2 ;
     private List<String> sqLst;
-    private int nextNumber = 2;
+    private int nextNumber = 1;
 
 
     CountingGame(int num){
         level = 2;
         sqLst = new ArrayList<>();
         for (int i = 0; i< num; i++){
-            sqLst.add(Integer.toString(i+1));
+            sqLst.add(Integer.toString(i+1
+            ));
         }
     }
     public int getLabel() {
@@ -41,11 +42,12 @@ public class CountingGame implements GameStyle{
     @Override
     public TouchStatus getTouchStatus(Square c) {
         int num = c.getId();
-        if (num == nextNumber-1) {
-            nextNumber++;
-            if (nextNumber > getLabel() ) {
-                return TouchStatus.LEVEL_COMPLETE;
+        if (num == nextNumber) {
+            if (nextNumber == getLabel()){
+                nextNumber = 1;
+                return  TouchStatus.LEVEL_COMPLETE;
             } else {
+                ++nextNumber;
                 return TouchStatus.CONTINUE;
             }
         } else {
